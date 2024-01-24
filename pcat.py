@@ -108,7 +108,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widget.setFocus()
         # manage viewer
         self.viewer = AnnotateViewerHelpler(self._viewer_port, self._viewer_hwnd)
-        self.viewer.set_color_map(labels_dict_pack['color_rgb'], [0, len(labels_dict_pack['color_rgb']) - 1])
+        self.viewer.set_sem_color_map(color_map=labels_dict_pack['color_rgb'], scale=[0, len(labels_dict_pack['color_rgb']) - 1])
+        self.viewer.set_ins_color_map(color_map='jet', scale=None)
     
     def closeProcess(self, kill=True):
         if self._viewer_process:
@@ -315,7 +316,7 @@ class MainWindow(QtWidgets.QMainWindow):
         file_dialog = QFileDialog()
         filepath, _ = file_dialog.getOpenFileName(None, '选择文件')
         _, extension = os.path.splitext(filepath)
-        if extension in ['.bin']:
+        if extension in ['.bin','.ply']:
             worker = Worker(self.viewer.load_data, filepath)
             worker.signals.result.connect(self.update_data_model)
             self.threadpool.start(worker)
@@ -333,9 +334,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_click_save_label(self):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
-        filepath, _ = QFileDialog.getSaveFileName(None, "导出文件", f'{self.cur_filename[:-4]}_labels.bin', "二进制文件 (*.bin)", options=options)
+        filepath, _ = QFileDialog.getSaveFileName(None, "导出文件", f'{self.cur_filename[:-4]}_labels', "二进制文件 (*.bin);;ply格式(*.ply)", options=options)
         _, extension = os.path.splitext(filepath)
-        if extension in ['.bin']:
+        if extension in ['.bin','.ply']:
             worker = Worker(self.viewer.save_labels, filepath)
             self.threadpool.start(worker)
 

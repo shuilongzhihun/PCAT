@@ -39,6 +39,13 @@ cd PCAT
 python pcat.py
 ```
 
+编译可执行项目
+
+```bash
+cd PCAT
+pyinstaller config.spec --clean
+```
+
 ## 使用方式
 
 ### 鼠标按键
